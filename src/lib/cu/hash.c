@@ -129,7 +129,7 @@ LPTSTR CU_BytesToHex(LPBYTE pbBuf, DWORD cbBufSize) {
 
     // Convert hash to hex string
     for (i = 0; i < cbBufSize; i++)
-        _stprintf_s(&szHex[i * 2], 2 * cbBufSize + 1, _T("%02x"), (TCHAR) pbBuf[i]);
+        _stprintf_s(&szHex[i * 2], 2 + 1, _T("%02x"), (TCHAR) pbBuf[i]);
 
     return szHex;
 }

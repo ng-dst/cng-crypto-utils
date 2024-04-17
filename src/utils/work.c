@@ -108,7 +108,7 @@ NTSTATUS ExecCommand(ARGUMENTS *args) {
             status = CU_HashFile(args->szInFile, args->szHashAlgorithm, &pbHash, &cbHashSize);
             if (NT_SUCCESS(status)) {
                 pbHashHex = CU_BytesToHex(pbHash, cbHashSize);
-                _tprintf(_T("%S\n"), pbHashHex ? pbHashHex : _T("Error converting hash to hex"));
+                _tprintf(_T("%S  %ls  %S\n"), args->szInFile, args->szHashAlgorithm, pbHashHex ? pbHashHex : _T("Error converting hash to hex"));
             }
             break;
 
@@ -155,7 +155,7 @@ NTSTATUS ExecCommand(ARGUMENTS *args) {
             status = CU_VerifyFile(args->szInFile, args->szSigFile, args->szHashAlgorithm, args->szSigAlgorithm, pbPubKeyBlob, cbPubKeyBlobSize);
             if (!NT_SUCCESS(status)) { PrintNTStatusError(status); goto Cleanup; }
 
-            _tprintf(_T("OK\n"));
+            _tprintf(_T("%S  OK\n"), args->szInFile);
             break;
 
 
@@ -174,7 +174,7 @@ NTSTATUS ExecCommand(ARGUMENTS *args) {
             args->cbIvSize /= 8;
 
             // Check key size
-            if (args->cbKeySize == 0) { _tprintf(_T("Please specify key size in bits\n")); goto Cleanup; }
+            if (args->cbKeySize == 0) { _tprintf(_T("Please specify key size in bits (-c flag)\n")); goto Cleanup; }
 
             // Generate raw key buffer
             pbKeyBuffer = (LPBYTE)malloc(args->cbKeySize);
@@ -215,7 +215,7 @@ NTSTATUS ExecCommand(ARGUMENTS *args) {
             }
 
             // Check key size
-            if (args->cbKeySize == 0) { _tprintf(_T("Please specify key size (-c flag)\n")); goto Cleanup; }
+            if (args->cbKeySize == 0) { _tprintf(_T("Please specify key size in bits (-c flag)\n")); goto Cleanup; }
 
             // Generate key pair blobs
             status = CU_GenerateKeyPairBlob(args->szSigAlgorithm, args->cbKeySize, &pbPubKeyBlob, &cbPubKeyBlobSize, &pbPrivKeyBlob, &cbPrivKeyBlobSize);
