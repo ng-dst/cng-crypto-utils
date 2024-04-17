@@ -20,8 +20,7 @@
  * @brief Chunk size for encryption / hashing
  * (1024 blocks = 16-32 Kb)
  */
-#define CHUNK_SIZE_BLOCKS    2
-//1024
+#define CHUNK_SIZE_BLOCKS    1024
 
 
 /**
