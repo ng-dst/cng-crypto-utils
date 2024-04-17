@@ -90,7 +90,7 @@ Here's a brief overview of the project's architecture and execution flow:
 
 3. **Cryptography Utilities (`cu` directory):** This directory makes a set of `CU_` functions for encryption, decryption, hashing, signing, and key generation.
 
-    - **Encryption and Decryption (`encrypt.c`):** Symmetric key encryption. The key and initialization vector (IV) are read from a key file and used to encrypt or decrypt the input file.
+    - **Encryption and Decryption (`encrypt.c`):** Symmetric key encryption. The key is read from key blob, and IV is passed as an argument or generated randomly.
 
     - **Hashing (`hash.c`):** Hashing operation for files.
 
