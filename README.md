@@ -25,14 +25,31 @@ int main() {
     LPCTSTR szFileOut = "input.txt.enc";
     LPCWSTR szAlgo = BCRYPT_AES_ALGORITHM;
     LPCWSTR szMode = BCRYPT_CHAIN_MODE_CBC;
+
     LPBYTE pbKey = (LPBYTE) "sixteen-byte-key";
     DWORD cbKey = 16;
+
     LPBYTE pbIv = (LPBYTE) "0123456789abcdef";  // NULL -> random IV
     DWORD cbIv = 16;
 
-    NTSTATUS status = CU_EncryptFile(szFileIn, szFileOut, szAlgo, szMode, pbKey, cbKey, pbIv, cbIv);
+    // Create key blob
+    LPBYTE pbKeyBlob = NULL;
+    DWORD cbKeyBlob = 0;
+    NTSTATUS status = CU_CreateKeyBlob(szAlgo, pbKey, cbKey, &pbKeyBlob, &cbKeyBlob);
     if (!NT_SUCCESS(status)) {
         // Handle error
+    }
+
+    // Encrypt file
+    status = CU_EncryptFile(szFileIn, szFileOut, szAlgo, szMode, pbKeyBlob, cbKeyBlob, pbIv, cbIv);
+    if (!NT_SUCCESS(status)) {
+        // Handle error
+    }
+
+    // Erase and free key blob
+    if (pbKeyBlob) {
+        SecureZeroMemory(pbKeyBlob, cbKeyBlob);
+        free(pbKeyBlob);
     }
 
     return 0;
