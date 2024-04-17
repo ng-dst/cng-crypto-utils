@@ -5,8 +5,7 @@
 #include "argparse.h"
 #include "work.h"
 
-
-int wmain(int argc, LPTSTR *argv) {
+int _tmain(int argc, LPTSTR *argv) {
     /**
      * @brief Main: parse args and execute appropriate command
      */
