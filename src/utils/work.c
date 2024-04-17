@@ -106,7 +106,7 @@ NTSTATUS ExecCommand(ARGUMENTS *args) {
             status = CU_HashFile(args->szInFile, args->szHashAlgorithm, &pbHash, &cbHashSize);
             if (NT_SUCCESS(status)) {
                 pbHashHex = CU_BytesToHex(pbHash, cbHashSize);
-                _tprintf(_T("%S  %ls  %S\n"), args->szInFile, args->szHashAlgorithm, pbHashHex ? pbHashHex : _T("Error converting hash to hex"));
+                _tprintf_s(_T("%s  %ls  %s\n"), args->szInFile, args->szHashAlgorithm, pbHashHex ? pbHashHex : _T("Error converting hash to hex"));
             }
             break;
 
@@ -153,7 +153,7 @@ NTSTATUS ExecCommand(ARGUMENTS *args) {
             status = CU_VerifyFile(args->szInFile, args->szSigFile, args->szHashAlgorithm, args->szSigAlgorithm, pbPubKeyBlob, cbPubKeyBlobSize);
             if (!NT_SUCCESS(status)) { PrintNTStatusError(status); goto Cleanup; }
 
-            _tprintf(_T("%S  OK\n"), args->szInFile);
+            _tprintf_s(_T("%s  OK\n"), args->szInFile);
             break;
 
 

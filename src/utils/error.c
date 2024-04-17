@@ -20,7 +20,7 @@ void PrintNTStatusError(NTSTATUS status) {
 
     // Custom NTSTATUS error
     if (status == STATUS_WRONG_ENCRYPTION_KEY) {
-        _ftprintf(stderr, _T("Error: Wrong encryption key, algorithm, or chaining mode\n(Code: 0x%08lx)\n"), status);
+        _ftprintf_s(stderr, _T("Error: Wrong encryption key, algorithm, or chaining mode\n(Code: 0x%08lx)\n"), status);
         return;
     }
 
@@ -29,7 +29,7 @@ void PrintNTStatusError(NTSTATUS status) {
     HMODULE hNtDll = GetModuleHandle(_T("ntdll.dll"));
     if (hNtDll == INVALID_HANDLE_VALUE) {
         // Fallback to error code
-        _ftprintf(stderr, _T("Error: 0x%08lx\n"), status);
+        _ftprintf_s(stderr, _T("Error: 0x%08lx\n"), status);
         return;
     }
 
@@ -43,7 +43,7 @@ void PrintNTStatusError(NTSTATUS status) {
             (LPVOID) &pMsgBuf,
             0, NULL);
 
-    _ftprintf(stderr, _T("Error: %S(Code: 0x%08lx)\n"), pMsgBuf ? pMsgBuf : _T("unknown"), status);
+    _ftprintf_s(stderr, _T("Error: %s(Code: 0x%08lx)\n"), pMsgBuf ? pMsgBuf : _T("unknown"), status);
 
     LocalFree(pMsgBuf);
     CloseHandle(hNtDll);

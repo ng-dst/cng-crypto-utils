@@ -110,7 +110,7 @@ NTSTATUS CU_ExportKeyBlob(LPTSTR szPath, LPBYTE pbBlob, DWORD cbBlobSize) {
     // Open file
     hFile = CreateFile(szPath, GENERIC_WRITE, 0, NULL, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
     if (hFile == INVALID_HANDLE_VALUE) {
-        _ftprintf(stderr, _T("File error: Could not create key file (%lu): '%S'\n"), GetLastError(), szPath);
+        _ftprintf_s(stderr, _T("File error: Could not create key file (%lu): '%s'\n"), GetLastError(), szPath);
         return STATUS_UNSUCCESSFUL;
     }
 
@@ -144,7 +144,7 @@ NTSTATUS CU_ImportKeyBlob(LPTSTR szPath, LPBYTE *pbBlob, DWORD *pcbBlobSize) {
     // Open file for reading
     hFile = CreateFile(szPath, GENERIC_READ, 0, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
     if (hFile == INVALID_HANDLE_VALUE) {
-        _ftprintf(stderr, _T("File error: Could not open key file (%lu): '%S'\n"), GetLastError(), szPath);
+        _ftprintf_s(stderr, _T("File error: Could not open key file (%lu): '%s'\n"), GetLastError(), szPath);
         return STATUS_UNSUCCESSFUL;
     }
 

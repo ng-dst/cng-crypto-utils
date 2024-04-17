@@ -74,7 +74,7 @@ NTSTATUS CU_SignFile(LPCTSTR szFileIn, LPCTSTR szFileOut, LPCWSTR szHashAlg, LPC
     // Write signature to file
     hFileOut = CreateFile(szFileOut, GENERIC_WRITE, 0, NULL, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
     if (hFileOut == INVALID_HANDLE_VALUE) {
-        _ftprintf(stderr, _T("File error: Could not create signature file (%lu): '%S'\n"), GetLastError(), szFileIn);
+        _ftprintf_s(stderr, _T("File error: Could not create signature file (%lu): '%s'\n"), GetLastError(), szFileIn);
         status = STATUS_UNSUCCESSFUL;
         goto Cleanup;
     }
@@ -120,12 +120,12 @@ NTSTATUS CU_VerifyFile(LPCTSTR szFileIn, LPCTSTR szFileSig, LPCWSTR szHashAlg, L
     // Open file handles
     HANDLE hFileIn = CreateFile(szFileIn, GENERIC_READ, FILE_SHARE_READ, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
     if (hFileIn == INVALID_HANDLE_VALUE) {
-        _ftprintf(stderr, _T("File error: Could not open input file (%lu): '%S'\n"), GetLastError(), szFileIn);
+        _ftprintf_s(stderr, _T("File error: Could not open input file (%lu): '%s'\n"), GetLastError(), szFileIn);
         return STATUS_UNSUCCESSFUL;
     }
     HANDLE hFileSig = CreateFile(szFileSig, GENERIC_READ, FILE_SHARE_READ, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
     if (hFileSig == INVALID_HANDLE_VALUE) {
-        _ftprintf(stderr, _T("File error: Could not open signature file (%lu): '%S'\n"), GetLastError(), szFileSig);
+        _ftprintf_s(stderr, _T("File error: Could not open signature file (%lu): '%s'\n"), GetLastError(), szFileSig);
         return STATUS_UNSUCCESSFUL;
     }
 

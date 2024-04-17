@@ -75,7 +75,7 @@ NTSTATUS ParseArgs(DWORD argc, LPTSTR *argv, ARGUMENTS *args_struct) {
         PrintUsage();
         return STATUS_SUCCESS;
     } else {
-        _tprintf(_T("Unknown command: %S\n"), argv[1]);
+        _tprintf_s(_T("Unknown command: %s\n"), argv[1]);
         return STATUS_INVALID_PARAMETER;
     }
 

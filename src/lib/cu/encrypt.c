@@ -62,12 +62,12 @@ static NTSTATUS EncDecFile(LPCTSTR szFileIn, LPCTSTR szFileOut,
     // Open file handles
     HANDLE hFileIn = CreateFile(szFileIn, GENERIC_READ, FILE_SHARE_READ, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
     if (hFileIn == INVALID_HANDLE_VALUE) {
-        _ftprintf(stderr, _T("File error: Could not open input file (%lu): '%S'\n"), GetLastError(), szFileIn);
+        _ftprintf_s(stderr, _T("File error: Could not open input file (%lu): '%s'\n"), GetLastError(), szFileIn);
         return STATUS_UNSUCCESSFUL;
     }
     HANDLE hFileOut = CreateFile(szFileOut, GENERIC_WRITE, 0, NULL, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
     if (hFileOut == INVALID_HANDLE_VALUE) {
-        _ftprintf(stderr, _T("File error: Could not create output file (%lu): '%S'\n"), GetLastError(), szFileOut);
+        _ftprintf_s(stderr, _T("File error: Could not create output file (%lu): '%s'\n"), GetLastError(), szFileOut);
         status = STATUS_UNSUCCESSFUL;
         goto Cleanup;
     }
@@ -98,7 +98,7 @@ static NTSTATUS EncDecFile(LPCTSTR szFileIn, LPCTSTR szFileOut,
     status = BCryptGetProperty(hAlg, BCRYPT_BLOCK_LENGTH, (PBYTE)&cbBlockLen, sizeof(DWORD), &cbData, 0);
     if (!NT_SUCCESS(status)) goto Cleanup;
     if (pbProvidedIv != NULL && cbIvSize != cbBlockLen) {
-        _ftprintf(stderr, _T("Bad parameter: IV size must be equal to block length\n"));
+        _ftprintf_s(stderr, _T("Bad parameter: IV size must be equal to block length\n"));
         status = STATUS_INVALID_PARAMETER;
         goto Cleanup;
     }

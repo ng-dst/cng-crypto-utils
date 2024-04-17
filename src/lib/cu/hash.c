@@ -41,7 +41,7 @@ NTSTATUS CU_HashFile(LPCTSTR szFile, LPCWSTR szAlg, LPBYTE *pbHash, DWORD *pcbHa
     // Open file handle
     hFile = CreateFile(szFile, GENERIC_READ, FILE_SHARE_READ, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
     if (hFile == INVALID_HANDLE_VALUE) {
-        _ftprintf(stderr, _T("File error: Could not open input file (%lu): '%S'\n"), GetLastError(), szFile);
+        _ftprintf_s(stderr, _T("File error: Could not open input file (%lu): '%s'\n"), GetLastError(), szFile);
         return STATUS_UNSUCCESSFUL;
     }
 
@@ -129,7 +129,7 @@ LPTSTR CU_BytesToHex(LPBYTE pbBuf, DWORD cbBufSize) {
 
     // Convert hash to hex string
     for (i = 0; i < cbBufSize; i++)
-        _stprintf_s(&szHex[i * 2], 2 + 1, _T("%02x"), (TCHAR) pbBuf[i]);
+        _stprintf_s(&szHex[i * 2], 2 + 1, _T("%02x"), pbBuf[i]);
 
     return szHex;
 }
