@@ -47,6 +47,9 @@ NTSTATUS ExecCommand(ARGUMENTS *args) {
     if (args->szHashAlgorithm == NULL) args->szHashAlgorithm = wcsdup(BCRYPT_SHA256_ALGORITHM);
     if (args->szSigAlgorithm == NULL) args->szSigAlgorithm = wcsdup(BCRYPT_ECDSA_P256_ALGORITHM);
 
+    if (args->szAlgorithm == NULL || args->szHashAlgorithm == NULL || args->szSigAlgorithm == NULL)
+        goto Cleanup;
+
     // Use CU_* functions defined in cu.h
     switch (args->command) {
 
@@ -168,10 +171,23 @@ NTSTATUS ExecCommand(ARGUMENTS *args) {
                 if (args->szKeyFile == NULL) goto Cleanup;
             }
 
-            args->cbKeySize /= 8;
-
             // Check key size
-            if (args->cbKeySize == 0) { _tprintf(_T("Please specify key size in bits (-c flag)\n")); goto Cleanup; }
+            if (args->cbKeySize == 0) {
+                // Default key size
+                if      (!wcscmp(args->szAlgorithm, BCRYPT_DES_ALGORITHM)) args->cbKeySize = 64;
+                else if (!wcscmp(args->szAlgorithm, BCRYPT_3DES_ALGORITHM)) args->cbKeySize = 192;
+                else if (!wcscmp(args->szAlgorithm, BCRYPT_DESX_ALGORITHM)) args->cbKeySize = 192;
+                else if (!wcscmp(args->szAlgorithm, BCRYPT_AES_ALGORITHM)) args->cbKeySize = 128;
+                else if (!wcscmp(args->szAlgorithm, BCRYPT_RC2_ALGORITHM)) args->cbKeySize = 128;
+                else if (!wcscmp(args->szAlgorithm, BCRYPT_RC4_ALGORITHM)) args->cbKeySize = 128;
+                else {
+                    _tprintf(_T("Please specify key size in bits (-c flag)\n"));
+                    goto Cleanup;
+                }
+            }
+
+            // Key size in bytes
+            args->cbKeySize /= 8;
 
             // Generate raw key buffer
             pbKeyBuffer = (LPBYTE)malloc(args->cbKeySize);
@@ -185,6 +201,9 @@ NTSTATUS ExecCommand(ARGUMENTS *args) {
             if (!NT_SUCCESS(status)) { PrintNTStatusError(status); goto Cleanup; }
 
             status = CU_ExportKeyBlob(args->szKeyFile, pbKeyBlob, cbKeyBlobSize);
+            if (!NT_SUCCESS(status)) { PrintNTStatusError(status); goto Cleanup; }
+
+            _tprintf_s(_T("Generated %lu-bit %ls key: '%s'\n"), args->cbKeySize * 8, args->szAlgorithm, args->szKeyFile);
             break;
 
 
@@ -201,7 +220,18 @@ NTSTATUS ExecCommand(ARGUMENTS *args) {
             }
 
             // Check key size
-            if (args->cbKeySize == 0) { _tprintf(_T("Please specify key size in bits (-c flag)\n")); goto Cleanup; }
+            if (args->cbKeySize == 0) {
+                // Default key size
+                if      (!wcscmp(args->szSigAlgorithm, BCRYPT_ECDSA_P256_ALGORITHM)) args->cbKeySize = 256;
+                else if (!wcscmp(args->szSigAlgorithm, BCRYPT_ECDSA_P384_ALGORITHM)) args->cbKeySize = 384;
+                else if (!wcscmp(args->szSigAlgorithm, BCRYPT_ECDSA_P521_ALGORITHM)) args->cbKeySize = 521;
+                else if (!wcscmp(args->szSigAlgorithm, BCRYPT_RSA_ALGORITHM)) args->cbKeySize = 2048;
+                else if (!wcscmp(args->szSigAlgorithm, BCRYPT_DSA_ALGORITHM)) args->cbKeySize = 1024;
+                else {
+                    _tprintf(_T("Please specify key size in bits (-c flag)\n"));
+                    goto Cleanup;
+                }
+            }
 
             // Generate key pair blobs
             status = CU_GenerateKeyPairBlob(args->szSigAlgorithm, args->cbKeySize, &pbPubKeyBlob, &cbPubKeyBlobSize, &pbPrivKeyBlob, &cbPrivKeyBlobSize);
@@ -214,6 +244,7 @@ NTSTATUS ExecCommand(ARGUMENTS *args) {
             status = CU_ExportKeyBlob(args->szPrivKeyFile, pbPrivKeyBlob, cbPrivKeyBlobSize);
             if (!NT_SUCCESS(status)) { PrintNTStatusError(status); goto Cleanup; }
 
+            _tprintf_s(_T("Generated %lu-bit %ls key pair: '%s' (private), '%s' (public)\n"), args->cbKeySize, args->szSigAlgorithm, args->szPrivKeyFile, args->szPubKeyFile);
     }
 
     if (!NT_SUCCESS(status)) PrintNTStatusError(status);
