@@ -69,8 +69,8 @@ VOID PrintUsage() {
     _tprintf(_T("    lab3.exe hash <in_file> [-a <algorithm>]\n"));
     _tprintf(_T("\n"));
     _tprintf(_T("Key generation:\n"));
-    _tprintf(_T("    lab3.exe gen-key -c <key_size_bits> [out_file]\n"));
-    _tprintf(_T("    lab3.exe gen-pair -c <key_size_bits> [-s <sig_algorithm>] [priv_out_file] [pub_out_file]\n"));
+    _tprintf(_T("    lab3.exe gen-key [-a <algorithm>] [-c <key_size_bits>] [out_file]\n"));
+    _tprintf(_T("    lab3.exe gen-pair [-a/-s <sig_algorithm>] [-c <key_size_bits>] [priv_out_file] [pub_out_file]\n"));
     _tprintf(_T("\n"));
     _tprintf(_T("Algorithms list:\n"));
     _tprintf(_T("    lab3.exe algo\n"));
@@ -112,9 +112,6 @@ VOID PrintAlgos() {
     _tprintf(_T("    ECDSA_P256 (default)\n"));
     _tprintf(_T("    ECDSA_P384\n"));
     _tprintf(_T("    ECDSA_P521\n"));
-    _tprintf(_T("    ECDH_P256\n"));
-    _tprintf(_T("    ECDH_P384\n"));
-    _tprintf(_T("    ECDH_P521\n"));
     _tprintf(_T("    RSA\n"));
     _tprintf(_T("    DSA\n"));
     _tprintf(_T("\n"));
