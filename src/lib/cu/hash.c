@@ -63,7 +63,7 @@ NTSTATUS CU_HashFile(LPCTSTR szFile, LPCWSTR szAlg, LPBYTE *pbHash, DWORD *pcbHa
 
     // Allocate memory for hash object
     pbHashObject = (PBYTE)malloc(cbHashSize);
-    if (pbHashObject == NULL) goto Cleanup;
+    if (pbHashObject == NULL) { status = STATUS_NO_MEMORY; goto Cleanup; }
 
     // Create hash object
     status = BCryptCreateHash(hAlg, &hHash, pbHashObject, cbHashSize, NULL, 0, 0);
@@ -90,7 +90,7 @@ NTSTATUS CU_HashFile(LPCTSTR szFile, LPCWSTR szAlg, LPBYTE *pbHash, DWORD *pcbHa
 
     // Allocate memory for hash
     *pbHash = (LPBYTE)malloc(cbHashSize);
-    if (*pbHash == NULL) goto Cleanup;
+    if (*pbHash == NULL) { status = STATUS_NO_MEMORY; goto Cleanup; }
 
     // Finalize hash
     status = BCryptFinishHash(hHash, *pbHash, cbHashSize, 0);

@@ -61,7 +61,7 @@ NTSTATUS ExecCommand(ARGUMENTS *args) {
             // Default out file:  add .enc
             if (args->szOutFile == NULL) {
                 args->szOutFile = malloc((_tcslen(args->szInFile) + _tcslen(DEFAULT_ENC_SUFFIX) + 1) * sizeof(TCHAR));
-                if (args->szOutFile == NULL) goto Cleanup;
+                if (args->szOutFile == NULL) { status = STATUS_NO_MEMORY; goto Cleanup; }
                 _tcscpy(args->szOutFile, args->szInFile);
                 _tcscat(args->szOutFile, DEFAULT_ENC_SUFFIX);
             }
@@ -85,7 +85,7 @@ NTSTATUS ExecCommand(ARGUMENTS *args) {
 
                 if (suffix && !_tcsicmp(DEFAULT_ENC_SUFFIX, suffix)) {
                     args->szOutFile = _tcsdup(args->szInFile);
-                    if (args->szOutFile == NULL) goto Cleanup;
+                    if (args->szOutFile == NULL) { status = STATUS_NO_MEMORY; goto Cleanup; }
                     args->szOutFile[suffix - args->szInFile] = '\0';
                 }
                 else {
@@ -122,7 +122,7 @@ NTSTATUS ExecCommand(ARGUMENTS *args) {
             // Default out file:  add .sig
             if (args->szOutFile == NULL) {
                 args->szOutFile = malloc((_tcslen(args->szInFile) + _tcslen(DEFAULT_SIG_SUFFIX) + 1) * sizeof(TCHAR));
-                if (args->szOutFile == NULL) goto Cleanup;
+                if (args->szOutFile == NULL) { status = STATUS_NO_MEMORY; goto Cleanup; }
                 _tcscpy(args->szOutFile, args->szInFile);
                 _tcscat(args->szOutFile, DEFAULT_SIG_SUFFIX);
             }
@@ -145,7 +145,7 @@ NTSTATUS ExecCommand(ARGUMENTS *args) {
             // Default signature file:  add .sig
             if (args->szSigFile == NULL) {
                 args->szSigFile = malloc((_tcslen(args->szInFile) + _tcslen(DEFAULT_SIG_SUFFIX) + 1) * sizeof(TCHAR));
-                if (args->szSigFile == NULL) goto Cleanup;
+                if (args->szSigFile == NULL) { status = STATUS_NO_MEMORY; goto Cleanup; }
                 _tcscpy(args->szSigFile, args->szInFile);
                 _tcscat(args->szSigFile, DEFAULT_SIG_SUFFIX);
             }
@@ -168,7 +168,7 @@ NTSTATUS ExecCommand(ARGUMENTS *args) {
                     args->szKeyFile = _tcsdup(args->szOutFile);
                 else
                     args->szKeyFile = _tcsdup(DEFAULT_KEYFILE_NAME);
-                if (args->szKeyFile == NULL) goto Cleanup;
+                if (args->szKeyFile == NULL) { status = STATUS_NO_MEMORY; goto Cleanup; }
             }
 
             // Check key size
@@ -191,7 +191,7 @@ NTSTATUS ExecCommand(ARGUMENTS *args) {
 
             // Generate raw key buffer
             pbKeyBuffer = (LPBYTE)malloc(args->cbKeySize);
-            if (pbKeyBuffer == NULL) goto Cleanup;
+            if (pbKeyBuffer == NULL) { status = STATUS_NO_MEMORY; goto Cleanup; }
 
             status = CU_GetRandomBytes(pbKeyBuffer, args->cbKeySize);
             if (!NT_SUCCESS(status)) { PrintNTStatusError(status); goto Cleanup; }
@@ -212,11 +212,11 @@ NTSTATUS ExecCommand(ARGUMENTS *args) {
             // Default key file names
             if (args->szPrivKeyFile == NULL) {
                 args->szPrivKeyFile = _tcsdup(DEFAULT_PRIV_KEY_NAME);
-                if (args->szPrivKeyFile == NULL) goto Cleanup;
+                if (args->szPrivKeyFile == NULL) { status = STATUS_NO_MEMORY; goto Cleanup; }
             }
             if (args->szPubKeyFile == NULL) {
                 args->szPubKeyFile = _tcsdup(DEFAULT_PUB_KEY_NAME);
-                if (args->szPubKeyFile == NULL) goto Cleanup;
+                if (args->szPubKeyFile == NULL) { status = STATUS_NO_MEMORY; goto Cleanup; }
             }
 
             // Check key size

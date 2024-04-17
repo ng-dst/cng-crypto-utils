@@ -53,7 +53,7 @@ NTSTATUS CU_GenerateKeyPairBlob(LPCWSTR szAlgo, DWORD dwKeySize, LPBYTE *pbPubBl
 
     // Allocate memory for public key blob
     *pbPubBlob = (LPBYTE)malloc(cbPubBlob);
-    if (*pbPubBlob == NULL) goto Cleanup;
+    if (*pbPubBlob == NULL) { status = STATUS_NO_MEMORY; goto Cleanup; }
 
     // Export public key
     status = BCryptExportKey(hKey, NULL, BCRYPT_PUBLIC_KEY_BLOB, *pbPubBlob, cbPubBlob, &cbResult, 0);
@@ -67,7 +67,7 @@ NTSTATUS CU_GenerateKeyPairBlob(LPCWSTR szAlgo, DWORD dwKeySize, LPBYTE *pbPubBl
 
     // Allocate memory for private key blob
     *pbPrivBlob = (LPBYTE)malloc(cbPrivBlob);
-    if (*pbPrivBlob == NULL) goto Cleanup;
+    if (*pbPrivBlob == NULL) { status = STATUS_NO_MEMORY; goto Cleanup; }
 
     // Export private key
     status = BCryptExportKey(hKey, NULL, BCRYPT_PRIVATE_KEY_BLOB, *pbPrivBlob, cbPrivBlob, &cbResult, 0);

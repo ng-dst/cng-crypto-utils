@@ -89,7 +89,7 @@ NTSTATUS ParseArgs(DWORD argc, LPTSTR *argv, ARGUMENTS *args_struct) {
         if (_tcscmp(argv[i], _T("-o")) == 0) {
             if (i + 1 < argc) {
                 args_struct->szOutFile = _tcsdup(argv[i + 1]);
-                if (args_struct->szOutFile == NULL) goto Cleanup;
+                if (args_struct->szOutFile == NULL) { status = STATUS_NO_MEMORY; goto Cleanup; }
                 i++;
             }
 
@@ -98,7 +98,7 @@ NTSTATUS ParseArgs(DWORD argc, LPTSTR *argv, ARGUMENTS *args_struct) {
             if (i + 1 < argc) {
 #ifdef _UNICODE
                 args_struct->szAlgorithm = wcsdup(argv[i + 1]);
-                if (args_struct->szAlgorithm == NULL) goto Cleanup;
+                if (args_struct->szAlgorithm == NULL) { status = STATUS_NO_MEMORY; goto Cleanup; }
 #else
                 LPWSTR convertedAlgo = malloc(ALGO_NAME_MAX_LENGTH * sizeof(WCHAR));
                 if (convertedAlgo == NULL || !MultiByteToWideChar(CP_ACP, 0, argv[i + 1], -1, convertedAlgo, ALGO_NAME_MAX_LENGTH))
@@ -115,12 +115,12 @@ NTSTATUS ParseArgs(DWORD argc, LPTSTR *argv, ARGUMENTS *args_struct) {
 #ifdef _UNICODE
                 // Prepend "ChainingMode" to mode
                 args_struct->szMode = malloc((wcslen(argv[i + 1]) + wcslen(MODE_PREFIX)) * sizeof(WCHAR));
-                if (args_struct->szMode == NULL) goto Cleanup;
+                if (args_struct->szMode == NULL) { status = STATUS_NO_MEMORY; goto Cleanup; }
                 wcscpy(args_struct->szMode, MODE_PREFIX);
                 wcscat(args_struct->szMode, argv[i + 1]);
 #else
                 LPWSTR convertedMode = malloc(ALGO_NAME_MAX_LENGTH * sizeof(WCHAR));
-                if (convertedMode == NULL) goto Cleanup;
+                if (convertedMode == NULL) { status = STATUS_NO_MEMORY; goto Cleanup; }
                 wcscpy(convertedMode, MODE_PREFIX);
                 if (!MultiByteToWideChar(CP_ACP, 0, argv[i + 1], -1, convertedMode + wcslen(MODE_PREFIX), ALGO_NAME_MAX_LENGTH))
                     goto Cleanup;
@@ -134,7 +134,7 @@ NTSTATUS ParseArgs(DWORD argc, LPTSTR *argv, ARGUMENTS *args_struct) {
             if (i + 1 < argc) {
 #ifdef _UNICODE
                 args_struct->szSigAlgorithm = wcsdup(argv[i + 1]);
-                if (args_struct->szSigAlgorithm == NULL) goto Cleanup;
+                if (args_struct->szSigAlgorithm == NULL) { status = STATUS_NO_MEMORY; goto Cleanup; }
 #else
                 LPWSTR convertedSigAlgo = malloc(ALGO_NAME_MAX_LENGTH * sizeof(WCHAR));
                 if (convertedSigAlgo == NULL || !MultiByteToWideChar(CP_ACP, 0, argv[i + 1], -1, convertedSigAlgo, ALGO_NAME_MAX_LENGTH))

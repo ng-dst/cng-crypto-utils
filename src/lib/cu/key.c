@@ -71,7 +71,7 @@ NTSTATUS CU_CreateKeyBlob(LPCWSTR szAlgo, LPBYTE pbKey, DWORD cbKeySize, LPBYTE 
 
     // Allocate memory for key blob
     *pbKeyBlob = (LPBYTE)malloc(cbKeyBlob);
-    if (*pbKeyBlob == NULL) goto Cleanup;
+    if (*pbKeyBlob == NULL) { status = STATUS_NO_MEMORY; goto Cleanup; }
 
     // Generate key
     status = BCryptGenerateSymmetricKey(hAlg, &hKey, *pbKeyBlob, cbKeyBlob, pbKey, cbKeySize, 0);
