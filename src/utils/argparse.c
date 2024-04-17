@@ -200,6 +200,9 @@ NTSTATUS ParseArgs(DWORD argc, LPTSTR *argv, ARGUMENTS *args_struct) {
         case CMD_GEN_PAIR:
             if (param1) args_struct->szPrivKeyFile = _tcsdup(param1);
             if (param2) args_struct->szPubKeyFile = _tcsdup(param2);
+            // Allow -a option as well as -s
+            if (args_struct->szSigAlgorithm == NULL && args_struct->szAlgorithm != NULL)
+                args_struct->szSigAlgorithm = _tcsdup(args_struct->szAlgorithm);
     }
 
     // Tell main to continue execution
