@@ -29,7 +29,6 @@ typedef struct {
     LPWSTR szHashAlgorithm;
     LPWSTR szSigAlgorithm;
     DWORD cbKeySize;
-    DWORD cbIvSize;
 } ARGUMENTS;
 
 

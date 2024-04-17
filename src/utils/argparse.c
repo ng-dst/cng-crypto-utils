@@ -84,7 +84,7 @@ NTSTATUS ParseArgs(DWORD argc, LPTSTR *argv, ARGUMENTS *args_struct) {
     LPTSTR param2 = NULL;
     LPTSTR param3 = NULL;
 
-    // Parse arguments with flags: -o, -a, -m, -s, -c, -iv
+    // Parse arguments with flags: -o, -a, -m, -s, -c
     for (DWORD i = 2; i < argc; i++) {
         if (_tcscmp(argv[i], _T("-o")) == 0) {
             if (i + 1 < argc) {
@@ -148,13 +148,6 @@ NTSTATUS ParseArgs(DWORD argc, LPTSTR *argv, ARGUMENTS *args_struct) {
         } else if (_tcscmp(argv[i], _T("-c")) == 0) {
             if (i + 1 < argc) {
                 args_struct->cbKeySize = _tcstoul(argv[i + 1], NULL, 0);
-                i++;
-            }
-
-            // IV size (optional)
-        } else if (_tcscmp(argv[i], _T("-iv")) == 0) {
-            if (i + 1 < argc) {
-                args_struct->cbIvSize = _tcstoul(argv[i + 1], NULL, 0);
                 i++;
             }
 

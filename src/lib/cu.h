@@ -11,14 +11,35 @@
 
 
 /**
+ * @brief Custom NTSTATUS error
+ */
+#define STATUS_WRONG_ENCRYPTION_KEY ((NTSTATUS)0xC00002ABL)
+
+
+/**
  * @brief Chunk size for encryption / hashing
  * (1024 blocks = 16-32 Kb)
  */
-#define CHUNK_SIZE_BLOCKS    1024
+#define CHUNK_SIZE_BLOCKS    2
+//1024
 
 
 /**
  * @brief Encrypt file using symmetric algorithm
+ *
+ * @param szFileIn: Input file path
+ * @param szFileOut: Output file path
+ * @param szAlgo: Algorithm name (e.g. BCRYPT_AES_ALGORITHM)
+ * @param szMode [optional]: Chaining mode (e.g. BCRYPT_CHAIN_MODE_CBC)
+ * @param pbKey: Key buffer
+ * @param cbKey: Key buffer size
+ * @param pbIv [optional]: IV buffer
+ * @param cbIv [optional]: IV size
+ *
+ * @return NTSTATUS (0 on success)
+ *
+ * @note IV is generated randomly if pbIv == NULL
+ * @note IV is written as a first block of the file
  */
 NTSTATUS CU_EncryptFile(LPCTSTR szFileIn, LPCTSTR szFileOut,
                         LPCWSTR szAlgo, LPCWSTR szMode,
@@ -28,11 +49,21 @@ NTSTATUS CU_EncryptFile(LPCTSTR szFileIn, LPCTSTR szFileOut,
 
 /**
  * @brief Decrypt file using symmetric algorithm
+ *
+ * @param szFileIn: Input file path
+ * @param szFileOut: Output file path
+ * @param szAlgo: Algorithm name (e.g. BCRYPT_AES_ALGORITHM)
+ * @param szMode [optional]: Chaining mode (e.g. BCRYPT_CHAIN_MODE_CBC)
+ * @param pbKey: Key buffer
+ * @param cbKey: Key buffer size
+ *
+ * @return NTSTATUS (0 on success)
+ *
+ * @note IV is read as a first block of the file
  */
 NTSTATUS CU_DecryptFile(LPCTSTR szFileIn, LPCTSTR szFileOut,
                         LPCWSTR szAlgo, LPCWSTR szMode,
-                        LPBYTE pbKey, DWORD cbKey,
-                        LPBYTE pbIv, DWORD cbIv);
+                        LPBYTE pbKey, DWORD cbKey);
 
 
 /**
@@ -135,50 +166,19 @@ NTSTATUS CU_GenerateKeyPairBlob(LPCWSTR szAlgo, DWORD dwKeySize, LPBYTE *pbPubBl
  * @param szPath: File path
  * @param pbBlob: Key blob buffer
  * @param cbBlobSize: Key blob buffer size
- * @param pbIv [optional]: IV buffer
- * @param cbIvSize [optional]: IV buffer size
  *
  * @return NTSTATUS (0 on success)
  */
-NTSTATUS CU_ExportKeyBlob(LPTSTR szPath, LPBYTE pbBlob, DWORD cbBlobSize, LPBYTE pbIv, DWORD cbIvSize);
+NTSTATUS CU_ExportKeyBlob(LPTSTR szPath, LPBYTE pbBlob, DWORD cbBlobSize);
 
 
 /**
- * @brief Export key pair blobs to files
+ * @brief Import key blob from file
  *
- * @param szPubPath: Public key file path
- * @param szPrivPath: Private key file path
- * @param pbPubBlob: Public key blob buffer
- * @param cbPubBlobSize: Public key blob size
- * @param pbPrivBlob: Private key blob buffer
- * @param cbPrivBlobSize: Private key blob size
- *
- * @return NTSTATUS (0 on success)
- */
-NTSTATUS CU_ExportKeyPairBlob(LPTSTR szPubPath, LPTSTR szPrivPath, LPBYTE pbPubBlob, DWORD cbPubBlobSize, LPBYTE pbPrivBlob, DWORD cbPrivBlobSize);
-
-
-/**
- * @brief Import symmetric Key blob + IV from file
- *
- * @param szPath: File path
- * @param pbBlob: Pointer to get key blob to
- * @param pcbBlobSize: Pointer to get key blob size to
- * @param pbIv [optional]: Pointer to get IV buffer to
- * @param pcbIvSize [optional]: Pointer to get IV size to
- *
- * @return NTSTATUS (0 on success)
- */
-NTSTATUS CU_ImportSymmetricKeyBlob(LPTSTR szPath, LPBYTE *pbBlob, DWORD *pcbBlobSize, LPBYTE *pbIv, DWORD *pcbIvSize);
-
-
-/**
- * @brief Import public or private key blob from file
- *
- * @param szPath: Public / private key file path
+ * @param szPath: Key file path
  * @param pbPubBlob: Pointer to get key blob to
  * @param pcbPubBlobSize: Pointer to get blob size to
  *
  * @return NTSTATUS (0 on success)
  */
-NTSTATUS CU_ImportAsymmetricKeyBlob(LPTSTR szPath, LPBYTE *pbBlob, DWORD *pcbBlobSize);
+NTSTATUS CU_ImportKeyBlob(LPTSTR szPath, LPBYTE *pbBlob, DWORD *pcbBlobSize);

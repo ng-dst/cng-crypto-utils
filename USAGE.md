@@ -1,6 +1,6 @@
-# Cryptography Utilities (CU) Usage Guide
+# CU Usage
 
-CU accepts a variety of command line arguments to perform different operations. Here's a brief overview of the available commands and their usage:
+Here's a brief overview of the available commands and their usage:
 
 - `encrypt <in_file> <key_file>`: Encrypts the input file using the key provided in the key file.
 - `decrypt <in_file> <key_file>`: Decrypts the input file using the key provided in the key file.
@@ -21,7 +21,6 @@ In addition to the main commands, CU also supports several options to customize 
 - `-m <mode>`: Specifies the mode to use for the operation. The default is CBC.
 - `-s <sig_algorithm>`: Specifies the signature algorithm to use for the operation. The default is ECDSA_P256.
 - `-c <key_size_bits>`: Specifies the size of the key in bits.
-- `-iv <iv_size>`: Specifies the size of the initialization vector in bits.
 
 ## Examples
 

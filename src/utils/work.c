@@ -34,14 +34,12 @@ NTSTATUS ExecCommand(ARGUMENTS *args) {
     LPBYTE pbKeyBlob = NULL;
     LPBYTE pbPubKeyBlob = NULL;
     LPBYTE pbPrivKeyBlob = NULL;
-    LPBYTE pbIv = NULL;
     LPBYTE pbHash = NULL;
     LPBYTE pbKeyBuffer = NULL;
     LPTSTR pbHashHex = NULL;
     DWORD cbKeyBlobSize = 0;
     DWORD cbPubKeyBlobSize = 0;
     DWORD cbPrivKeyBlobSize = 0;
-    DWORD cbIvSize = 0;
     DWORD cbHashSize = 0;
 
     // Default algorithms
@@ -65,10 +63,11 @@ NTSTATUS ExecCommand(ARGUMENTS *args) {
                 _tcscat(args->szOutFile, DEFAULT_ENC_SUFFIX);
             }
             
-            status = CU_ImportSymmetricKeyBlob(args->szKeyFile, &pbKeyBlob, &cbKeyBlobSize, &pbIv, &cbIvSize);
+            status = CU_ImportKeyBlob(args->szKeyFile, &pbKeyBlob, &cbKeyBlobSize);
             if (!NT_SUCCESS(status)) { PrintNTStatusError(status); goto Cleanup; }
-            
-            status = CU_EncryptFile(args->szInFile, args->szOutFile, args->szAlgorithm, args->szMode, pbKeyBlob, cbKeyBlobSize, pbIv, cbIvSize);
+
+            // Use random or no IV (null)
+            status = CU_EncryptFile(args->szInFile, args->szOutFile, args->szAlgorithm, args->szMode, pbKeyBlob, cbKeyBlobSize, NULL, 0);
             break;
 
             
@@ -92,11 +91,10 @@ NTSTATUS ExecCommand(ARGUMENTS *args) {
                 }
             }
             
-            status = CU_ImportSymmetricKeyBlob(args->szKeyFile, &pbKeyBlob, &cbKeyBlobSize, &pbIv, &cbIvSize);
+            status = CU_ImportKeyBlob(args->szKeyFile, &pbKeyBlob, &cbKeyBlobSize);
             if (!NT_SUCCESS(status)) { PrintNTStatusError(status); goto Cleanup; }
             
-            status = CU_DecryptFile(args->szInFile, args->szOutFile, args->szAlgorithm, args->szMode, pbKeyBlob, cbKeyBlobSize, pbIv, cbIvSize);
-            if (status == STATUS_DATA_ERROR) status = STATUS_WRONG_ENCRYPTION_KEY;
+            status = CU_DecryptFile(args->szInFile, args->szOutFile, args->szAlgorithm, args->szMode, pbKeyBlob, cbKeyBlobSize);
             break;
 
             
@@ -126,7 +124,7 @@ NTSTATUS ExecCommand(ARGUMENTS *args) {
                 _tcscat(args->szOutFile, DEFAULT_SIG_SUFFIX);
             }
 
-            status = CU_ImportAsymmetricKeyBlob(args->szPrivKeyFile, &pbPrivKeyBlob, &cbPrivKeyBlobSize);
+            status = CU_ImportKeyBlob(args->szPrivKeyFile, &pbPrivKeyBlob, &cbPrivKeyBlobSize);
             if (!NT_SUCCESS(status)) { PrintNTStatusError(status); goto Cleanup; }
             
             status = CU_SignFile(args->szInFile, args->szOutFile, args->szHashAlgorithm, args->szSigAlgorithm, pbPrivKeyBlob, cbPrivKeyBlobSize);
@@ -149,7 +147,7 @@ NTSTATUS ExecCommand(ARGUMENTS *args) {
                 _tcscat(args->szSigFile, DEFAULT_SIG_SUFFIX);
             }
 
-            status = CU_ImportAsymmetricKeyBlob(args->szPubKeyFile, &pbPubKeyBlob, &cbPubKeyBlobSize);
+            status = CU_ImportKeyBlob(args->szPubKeyFile, &pbPubKeyBlob, &cbPubKeyBlobSize);
             if (!NT_SUCCESS(status)) { PrintNTStatusError(status); goto Cleanup; }
             
             status = CU_VerifyFile(args->szInFile, args->szSigFile, args->szHashAlgorithm, args->szSigAlgorithm, pbPubKeyBlob, cbPubKeyBlobSize);
@@ -171,7 +169,6 @@ NTSTATUS ExecCommand(ARGUMENTS *args) {
             }
 
             args->cbKeySize /= 8;
-            args->cbIvSize /= 8;
 
             // Check key size
             if (args->cbKeySize == 0) { _tprintf(_T("Please specify key size in bits (-c flag)\n")); goto Cleanup; }
@@ -187,18 +184,7 @@ NTSTATUS ExecCommand(ARGUMENTS *args) {
             status = CU_CreateKeyBlob(args->szAlgorithm, pbKeyBuffer, args->cbKeySize, &pbKeyBlob, &cbKeyBlobSize);
             if (!NT_SUCCESS(status)) { PrintNTStatusError(status); goto Cleanup; }
 
-            // Generate IV if needed
-            if (args->cbIvSize == 0)
-                status = CU_ExportKeyBlob(args->szKeyFile, pbKeyBlob, cbKeyBlobSize, NULL, 0);
-            else {
-                pbIv = (LPBYTE)malloc(args->cbIvSize);
-                if (pbIv == NULL) goto Cleanup;
-
-                status = CU_GetRandomBytes(pbIv, args->cbIvSize);
-                if (!NT_SUCCESS(status)) { PrintNTStatusError(status); goto Cleanup; }
-
-                status = CU_ExportKeyBlob(args->szKeyFile, pbKeyBlob, cbKeyBlobSize, pbIv, args->cbIvSize);
-            }
+            status = CU_ExportKeyBlob(args->szKeyFile, pbKeyBlob, cbKeyBlobSize);
             break;
 
 
@@ -222,7 +208,10 @@ NTSTATUS ExecCommand(ARGUMENTS *args) {
             if (!NT_SUCCESS(status)) { PrintNTStatusError(status); goto Cleanup; }
 
             // Export key pair blobs to files
-            status = CU_ExportKeyPairBlob(args->szPubKeyFile, args->szPrivKeyFile, pbPubKeyBlob, cbPubKeyBlobSize, pbPrivKeyBlob, cbPrivKeyBlobSize);
+            status = CU_ExportKeyBlob(args->szPubKeyFile, pbPubKeyBlob, cbPubKeyBlobSize);
+            if (!NT_SUCCESS(status)) { PrintNTStatusError(status); goto Cleanup; }
+
+            status = CU_ExportKeyBlob(args->szPrivKeyFile, pbPrivKeyBlob, cbPrivKeyBlobSize);
             if (!NT_SUCCESS(status)) { PrintNTStatusError(status); goto Cleanup; }
 
     }
@@ -235,7 +224,6 @@ NTSTATUS ExecCommand(ARGUMENTS *args) {
     if (pbKeyBlob) { SecureZeroMemory(pbKeyBlob, cbKeyBlobSize); free(pbKeyBlob); }
     if (pbPubKeyBlob) { SecureZeroMemory(pbPubKeyBlob, cbPubKeyBlobSize); free(pbPubKeyBlob); }
     if (pbPrivKeyBlob) { SecureZeroMemory(pbPrivKeyBlob, cbPrivKeyBlobSize); free(pbPrivKeyBlob); }
-    if (pbIv) { SecureZeroMemory(pbIv, cbIvSize); free(pbIv); }
     if (pbHash) { SecureZeroMemory(pbHash, cbHashSize); free(pbHash); }
     if (pbHashHex) { SecureZeroMemory(pbHashHex, _tcsnlen(pbHashHex, 2*cbHashSize + 1)); free(pbHashHex); }
 

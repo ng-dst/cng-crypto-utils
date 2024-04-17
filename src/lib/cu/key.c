@@ -92,15 +92,13 @@ NTSTATUS CU_CreateKeyBlob(LPCWSTR szAlgo, LPBYTE pbKey, DWORD cbKeySize, LPBYTE 
 }
 
 
-NTSTATUS CU_ExportKeyBlob(LPTSTR szPath, LPBYTE pbBlob, DWORD cbBlobSize, LPBYTE pbIv, DWORD cbIvSize) {
+NTSTATUS CU_ExportKeyBlob(LPTSTR szPath, LPBYTE pbBlob, DWORD cbBlobSize) {
     /**
      * @brief Export symmetric key blob to file
      *
      * @param szPath: File path
      * @param pbBlob: Key blob buffer
      * @param cbBlobSize: Key blob buffer size
-     * @param pbIv [optional]: IV buffer
-     * @param cbIvSize [optional]: IV buffer size
      *
      * @return NTSTATUS (0 on success)
      */
@@ -122,49 +120,36 @@ NTSTATUS CU_ExportKeyBlob(LPTSTR szPath, LPBYTE pbBlob, DWORD cbBlobSize, LPBYTE
         return STATUS_UNSUCCESSFUL;
     }
 
-    // Write IV to file
-    if (pbIv != NULL && cbIvSize > 0)
-        WriteFile(hFile, pbIv, cbIvSize, &cbWritten, NULL);
-
     status = STATUS_SUCCESS;
     CloseHandle(hFile);
     return status;
 }
 
 
-NTSTATUS CU_ImportSymmetricKeyBlob(LPTSTR szPath, LPBYTE *pbBlob, DWORD *pcbBlobSize, LPBYTE *pbIv, DWORD *pcbIvSize) {
+NTSTATUS CU_ImportKeyBlob(LPTSTR szPath, LPBYTE *pbBlob, DWORD *pcbBlobSize) {
     /**
-     * @brief Import symmetric Key + IV blob from file
+     * @brief Allocate and read key blob from file.
      *
-     * @param szPath: File path
+     * @param szPath: Key file path
      * @param pbBlob: Pointer to get key blob to
-     * @param pcbBlobSize: Pointer to get key blob size to
-     * @param pbIv [optional]: Pointer to get IV buffer to
-     * @param pcbIvSize [optional]: Pointer to get IV size to
+     * @param pcbBlobSize: Pointer to get blob size to
      *
      * @return NTSTATUS (0 on success)
      */
 
-    NTSTATUS status = STATUS_UNSUCCESSFUL;
     HANDLE hFile = INVALID_HANDLE_VALUE;
     DWORD cbRead = 0;
     DWORD cbFileSize;
 
-    // Open file
+    // Open file for reading
     hFile = CreateFile(szPath, GENERIC_READ, 0, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
     if (hFile == INVALID_HANDLE_VALUE) {
         _ftprintf(stderr, _T("File error: Could not open key file (%lu): '%S'\n"), GetLastError(), szPath);
         return STATUS_UNSUCCESSFUL;
     }
 
-    // Get file size
-    cbFileSize = GetFileSize(hFile, NULL);
-    if (cbFileSize == INVALID_FILE_SIZE) {
-        CloseHandle(hFile);
-        return STATUS_UNSUCCESSFUL;
-    }
-
     // Allocate memory for key blob
+    cbFileSize = GetFileSize(hFile, NULL);
     *pbBlob = (LPBYTE)malloc(cbFileSize);
     if (*pbBlob == NULL) {
         CloseHandle(hFile);
@@ -176,26 +161,9 @@ NTSTATUS CU_ImportSymmetricKeyBlob(LPTSTR szPath, LPBYTE *pbBlob, DWORD *pcbBlob
         CloseHandle(hFile);
         return STATUS_UNSUCCESSFUL;
     }
+
     *pcbBlobSize = cbRead;
-
-    // Check if IV is present in blob
-    BCRYPT_KEY_DATA_BLOB_HEADER* pBlobHeader = (BCRYPT_KEY_DATA_BLOB_HEADER*)*pbBlob;
-    DWORD cbIvSize = cbFileSize - pBlobHeader->cbKeyData - sizeof(BCRYPT_KEY_DATA_BLOB_HEADER);
-    if (cbIvSize > 0 && cbIvSize < cbFileSize) {
-        *pbIv = malloc(cbIvSize);
-        if (*pbIv == NULL) {
-            CloseHandle(hFile);
-            return STATUS_UNSUCCESSFUL;
-        }
-        memcpy(*pbIv, *pbBlob + cbFileSize - cbIvSize, cbIvSize);
-        *pcbIvSize = cbIvSize;
-    }
-    else {
-        *pbIv = NULL;
-        *pcbIvSize = 0;
-    }
-
-    status = STATUS_SUCCESS;
     CloseHandle(hFile);
-    return status;
+
+    return STATUS_SUCCESS;
 }

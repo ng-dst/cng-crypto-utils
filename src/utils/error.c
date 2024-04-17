@@ -8,6 +8,8 @@
 #include <stdio.h>
 #include <tchar.h>
 
+#include "cu.h"
+
 #include "error.h"
 
 
@@ -67,8 +69,8 @@ VOID PrintUsage() {
     _tprintf(_T("    lab3.exe hash <in_file> [-a <algorithm>]\n"));
     _tprintf(_T("\n"));
     _tprintf(_T("Key generation:\n"));
-    _tprintf(_T("    lab3.exe gen-key -c <key_size_bits> [-iv <iv_size>] [out_file]\n"));
-    _tprintf(_T("    lab3.exe gen-pair -c <key_size_bits> -s <sig_algorithm> [priv_out_file] [pub_out_file]\n"));
+    _tprintf(_T("    lab3.exe gen-key -c <key_size_bits> [out_file]\n"));
+    _tprintf(_T("    lab3.exe gen-pair -c <key_size_bits> [-s <sig_algorithm>] [priv_out_file] [pub_out_file]\n"));
     _tprintf(_T("\n"));
     _tprintf(_T("Algorithms list:\n"));
     _tprintf(_T("    lab3.exe algo\n"));

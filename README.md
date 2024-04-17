@@ -27,7 +27,7 @@ int main() {
     LPCWSTR szMode = BCRYPT_CHAIN_MODE_CBC;
     LPBYTE pbKey = (LPBYTE) "sixteen-byte-key";
     DWORD cbKey = 16;
-    LPBYTE pbIv = (LPBYTE) "0123456789abcdef";
+    LPBYTE pbIv = (LPBYTE) "0123456789abcdef";  // NULL -> random IV
     DWORD cbIv = 16;
 
     NTSTATUS status = CU_EncryptFile(szFileIn, szFileOut, szAlgo, szMode, pbKey, cbKey, pbIv, cbIv);
@@ -39,7 +39,7 @@ int main() {
 }
 ```
 
-Many parameters are optional and have default values. For example, default algorithm is AES and default AES mode is CBC. IV should be NULL if not used by the algorithm.
+Many parameters are optional and have default values. For example, default algorithm is AES and default AES mode is CBC. IV can be NULL, and in that case, it will be generated randomly.
 
 Most functions return `NTSTATUS` values, which are Windows error codes. You can use the `NT_SUCCESS` macro to check if the operation was successful.
 
