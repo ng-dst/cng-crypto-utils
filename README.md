@@ -117,4 +117,10 @@ To build the project, follow these steps:
 ## TODO
 
 - Shell extension for context menu integration (lab 4)
-- ~~GUI for easier key management (lab 5)~~ 
+- ~~GUI for easier key management (lab 5)~~ jk
+
+<br>
+
+       ^  ^    /) /)   ^  ^   ^  🎀
+      (^u^)   (•v•)   (^v^)   (^u^)
+      /🍜 Ⳋ   🍱<\.   />🍘   🍡<\
