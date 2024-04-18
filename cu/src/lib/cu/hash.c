@@ -34,6 +34,7 @@ NTSTATUS CU_HashFile(LPCTSTR szFile, LPCWSTR szAlg, LPBYTE *pbHash, DWORD *pcbHa
     DWORD cbDataSize = 0;
     DWORD cbBlockSize;
     DWORD cbChunkSize;
+    DWORD cbHashObjectSize = 0;
     PBYTE pbData = NULL;
     PBYTE pbHashObject = NULL;
     HANDLE hFile = INVALID_HANDLE_VALUE;
@@ -50,7 +51,7 @@ NTSTATUS CU_HashFile(LPCTSTR szFile, LPCWSTR szAlg, LPBYTE *pbHash, DWORD *pcbHa
     if (!NT_SUCCESS(status)) goto Cleanup;
 
     // Calculate hash object size
-    status = BCryptGetProperty(hAlg, BCRYPT_OBJECT_LENGTH, (PBYTE)&cbHashSize, sizeof(DWORD), &cbResult, 0);
+    status = BCryptGetProperty(hAlg, BCRYPT_OBJECT_LENGTH, (PBYTE)&cbHashObjectSize, sizeof(DWORD), &cbResult, 0);
     if (!NT_SUCCESS(status)) goto Cleanup;
 
     // Get hash block size
@@ -62,11 +63,11 @@ NTSTATUS CU_HashFile(LPCTSTR szFile, LPCWSTR szAlg, LPBYTE *pbHash, DWORD *pcbHa
     cbChunkSize = cbBlockSize * CHUNK_SIZE_BLOCKS;
 
     // Allocate memory for hash object
-    pbHashObject = (PBYTE)malloc(cbHashSize);
+    pbHashObject = (PBYTE)malloc(cbHashObjectSize);
     if (pbHashObject == NULL) { status = STATUS_NO_MEMORY; goto Cleanup; }
 
     // Create hash object
-    status = BCryptCreateHash(hAlg, &hHash, pbHashObject, cbHashSize, NULL, 0, 0);
+    status = BCryptCreateHash(hAlg, &hHash, pbHashObject, cbHashObjectSize, NULL, 0, 0);
     if (!NT_SUCCESS(status)) goto Cleanup;
 
     // Allocate hash buffer
@@ -103,7 +104,7 @@ NTSTATUS CU_HashFile(LPCTSTR szFile, LPCWSTR szAlg, LPBYTE *pbHash, DWORD *pcbHa
     if (hHash) BCryptDestroyHash(hHash);
     if (hAlg) BCryptCloseAlgorithmProvider(hAlg, 0);
     if (pbData) { SecureZeroMemory(pbData, cbDataSize); free(pbData); }
-    if (pbHashObject) { SecureZeroMemory(pbHashObject, cbHashSize); free(pbHashObject); }
+    if (pbHashObject) { SecureZeroMemory(pbHashObject, cbHashObjectSize); free(pbHashObject); }
     CloseHandle(hFile);
 
     return status;

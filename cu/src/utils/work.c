@@ -18,7 +18,7 @@
 
 
 #define DEFAULT_KEYFILE_NAME    _T( "key.bin" )
-#define DEFAULT_PRIV_KEY_NAME   _T( "id_key" )
+#define DEFAULT_PRIV_KEY_NAME   _T( "id_key.priv" )
 #define DEFAULT_PUB_KEY_NAME    _T( "id_key.pub" )
 #define DEFAULT_ENC_SUFFIX      _T( ".enc" )
 #define DEFAULT_SIG_SUFFIX      _T( ".sig" )

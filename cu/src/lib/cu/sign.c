@@ -78,7 +78,7 @@ NTSTATUS CU_SignFile(LPCTSTR szFileIn, LPCTSTR szFileOut, LPCWSTR szHashAlg, LPC
         status = STATUS_UNSUCCESSFUL;
         goto Cleanup;
     }
-    WriteFile(hFileOut, pbSignature, cbResult, &cbHashSize, NULL);
+    WriteFile(hFileOut, pbSignature, cbResult, &cbResult, NULL);
 
     Cleanup:
 
