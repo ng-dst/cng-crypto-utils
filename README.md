@@ -1,6 +1,7 @@
-# Lab 3: Cryptography Utilities
+# Labs 3-4: Cryptography Utilities (CU, zCU)
 
-CU is a simple suite of cryptographic functions implemented as a library and as a command line tool. It's built on top of the CNG API and provides a simplified interface for common cryptographic operations.
+CU is a simple suite of cryptographic functions implemented as a library, as a command line tool, and as a GUI tool (zCU) for context menu. 
+It's built on top of the CNG API and provides a simplified interface for common cryptographic operations.
 
 ## Features
 
@@ -12,6 +13,8 @@ CU is a simple suite of cryptographic functions implemented as a library and as 
 - Generate random bytes
 
 ## Usage
+
+See [USAGE.md](USAGE.md) for more detailed usage guide in different scenarios.
 
 ### As a library
 
@@ -94,12 +97,49 @@ Most flags (`-a`, `-m`, `-s`, `-o`) are **optional** and can be omitted. The pro
 
 For algorithms list, use `algo` command. For help, use `help`.
 
-For more detailed usage guide, see the [USAGE.md](USAGE.md).
+### As a Context menu GUI
 
+There is a GUI wrapper: zCU. It is designed to be used in context menu, but it can be run from command line as well: \
+`zcu.exe <command> [files...]`
+
+First, build the tool and place binaries (`lab3.exe`, `zcu.exe`) to `build\` directory. 
+
+Navigate to `shell\` and run `install.ps1`. Accept registry changes when prompted.
+
+CU will be installed in `C:\Program Files\CU\`. To uninstall, run `uninstall.ps1` in CU directory.
+
+To use zCU on a file, right-click on the file and navigate to `Cryptography` menu:
+```
+Cryptography ->
+    Encryption ->
+        Encrypt...
+        Decrypt...
+    Signing ->
+        Verify...
+        Sign...
+    Hashing ->
+        Hash...
+```
+
+To generate keys, right-click on an empty space in a directory and use that menu as well:
+```
+Cryptography ->
+    Key Generation ->
+        Generate key...
+        Generate key pair...
+```
+
+A small zCU window with parameters and key file selection will pop up.
+
+<br>
+
+_Note:_ Not all algorithms, hashes, modes, etc. are compatible with each other by design.
+
+_**If it says `Invalid parameter` or such, chances are you've actually picked wrong parameters.**_
 
 ## Internal Architecture
 
-Here's a brief overview of the project's architecture and execution flow:
+Here's a brief overview of CU architecture and execution flow:
 
 1. **Argument Parsing (`argparse.c`):** parsing command-line arguments using the `ParseArgs` function. This function fills an `ARGUMENTS` structure with specified parameters.
 
@@ -117,12 +157,15 @@ Here's a brief overview of the project's architecture and execution flow:
 
 4. **Error Handling (`error.c`):** Functions for printing error and usage messages.
 
+<br>
+
+As for zCU, it is a GUI wrapper that forms a command line for CU and executes it for each specified file. The code might seem complex but the concept is trivial. 
 
 ## Building
 
-This project is built using CMake, as specified in the `CMakeLists.txt` file. The project is organized into a static library (`cu`) and an executable (`lab3.exe`) which is a command-line utility.
+This project is built using CMake, as specified in the `CMakeLists.txt` file. The project is organized into a static library (`cu`) and two executables (`lab3.exe`, `zcu.exe`).
 
-Supports Unicode and ANSI builds. To build an Unicode version, set `UNICODE` in `CMakeLists.txt`. This repo's release channel has Unicode builds.
+CU supports both Unicode and ANSI builds, while zCU always uses Unicode. For ANSI CU version, unset `UNICODE` in `CMakeLists.txt`. This repo's release channel has Unicode builds.
 
 To build the project, follow these steps:
 
@@ -132,7 +175,7 @@ To build the project, follow these steps:
 
 ## TODO
 
-- Shell extension for context menu integration (lab 4)
+- Shell extension for context menu integration (lab 4) - **Done!**
 - ~~GUI for easier key management (lab 5)~~ jk
 
 <br>
