@@ -1,0 +1,83 @@
+Windows Registry Editor Version 5.00
+
+
+[HKEY_CLASSES_ROOT\*\shell\Cryptography]
+"MUIVerb"="Cryptography"
+"subcommands"=""
+
+[HKEY_CLASSES_ROOT\*\shell\Cryptography\shell]
+
+[HKEY_CLASSES_ROOT\*\shell\Cryptography\shell\a_Encryption]
+"MUIVerb"="Encryption"
+"subcommands"=""
+
+[HKEY_CLASSES_ROOT\*\shell\Cryptography\shell\a_Encryption\shell]
+
+[HKEY_CLASSES_ROOT\*\shell\Cryptography\shell\a_Encryption\shell\a_Encrypt]
+@="Encrypt..."
+"CommandFlags"=dword:00000040
+
+[HKEY_CLASSES_ROOT\*\shell\Cryptography\shell\a_Encryption\shell\a_Encrypt\command]
+@="\"${CU_PATH}\\zcu.exe\" encrypt \"%1\""
+
+[HKEY_CLASSES_ROOT\*\shell\Cryptography\shell\a_Encryption\shell\b_Decrypt]
+@="Decrypt..."
+
+[HKEY_CLASSES_ROOT\*\shell\Cryptography\shell\a_Encryption\shell\b_Decrypt\command]
+@="\"${CU_PATH}\\zcu.exe\" decrypt \"%1\""
+
+[HKEY_CLASSES_ROOT\*\shell\Cryptography\shell\b_Signing]
+"MUIVerb"="Signing"
+"subcommands"=""
+
+[HKEY_CLASSES_ROOT\*\shell\Cryptography\shell\b_Signing\shell]
+
+[HKEY_CLASSES_ROOT\*\shell\Cryptography\shell\b_Signing\shell\a_Verify]
+@="Verify..."
+"CommandFlags"=dword:00000040
+
+[HKEY_CLASSES_ROOT\*\shell\Cryptography\shell\b_Signing\shell\a_Verify\command]
+@="\"${CU_PATH}\\zcu.exe\" verify \"%1\""
+
+[HKEY_CLASSES_ROOT\*\shell\Cryptography\shell\b_Signing\shell\b_Sign]
+@="Sign..."
+
+[HKEY_CLASSES_ROOT\*\shell\Cryptography\shell\b_Signing\shell\b_Sign\command]
+@="\"${CU_PATH}\\zcu.exe\" sign \"%1\""
+
+[HKEY_CLASSES_ROOT\*\shell\Cryptography\shell\c_Hashing]
+"MUIVerb"="Hashing"
+"subcommands"=""
+
+[HKEY_CLASSES_ROOT\*\shell\Cryptography\shell\c_Hashing\shell]
+
+[HKEY_CLASSES_ROOT\*\shell\Cryptography\shell\c_Hashing\shell\a_Hash]
+@="Hash..."
+
+[HKEY_CLASSES_ROOT\*\shell\Cryptography\shell\c_Hashing\shell\a_Hash\command]
+@="\"${CU_PATH}\\zcu.exe\" hash \"%1\""
+
+
+[HKEY_CLASSES_ROOT\Directory\Background\shell\Cryptography]
+"MUIVerb"="Cryptography"
+"subcommands"=""
+
+[HKEY_CLASSES_ROOT\Directory\Background\shell\Cryptography\shell]
+
+[HKEY_CLASSES_ROOT\Directory\Background\shell\Cryptography\shell\a_KeyGeneration]
+"MUIVerb"="Key Generation"
+"subcommands"=""
+
+[HKEY_CLASSES_ROOT\Directory\Background\shell\Cryptography\shell\a_KeyGeneration\shell]
+
+[HKEY_CLASSES_ROOT\Directory\Background\shell\Cryptography\shell\a_KeyGeneration\shell\a_GenerateKey]
+@="Generate key..."
+
+[HKEY_CLASSES_ROOT\Directory\Background\shell\Cryptography\shell\a_KeyGeneration\shell\a_GenerateKey\command]
+@="\"${CU_PATH}\\zcu.exe\" gen-key"
+
+[HKEY_CLASSES_ROOT\Directory\Background\shell\Cryptography\shell\a_KeyGeneration\shell\b_GenerateKeyPair]
+@="Generate key pair..."
+
+[HKEY_CLASSES_ROOT\Directory\Background\shell\Cryptography\shell\a_KeyGeneration\shell\b_GenerateKeyPair\command]
+@="\"${CU_PATH}\\zcu.exe\" gen-pair"

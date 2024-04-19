@@ -14,7 +14,12 @@ add_executable(zcu
         src/include/command.h)
 
 target_link_libraries(zcu shlwapi)
+set_target_properties(zcu PROPERTIES WIN32_EXECUTABLE TRUE)
+
+if (MSVC)
+    set_target_properties(zcu PROPERTIES LINK_FLAGS "/SUBSYSTEM:WINDOWS")
+endif (MSVC)
 
 if (MINGW)
-    set_target_properties(zcu PROPERTIES LINK_FLAGS "-municode")
+    set_target_properties(zcu PROPERTIES LINK_FLAGS "-municode -mwindows")
 endif (MINGW)

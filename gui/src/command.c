@@ -15,7 +15,6 @@
 
 #define TEMP_HASHES_FILE L"temp.hashes.txt"
 
-#define MAX_STDOUT_LENGTH 4096
 #define MAX_ALGO_NAME_LENGTH 32
 #define MAX_ERROR_MSG_LENGTH (MAX_PATH + 128)
 
@@ -71,6 +70,18 @@ static VOID GetCUPath(LPWSTR szPath) {
     GetModuleFileNameW(NULL, szPath, MAX_PATH);
     PathRemoveFileSpecW(szPath);
     PathAppendW(szPath, L"lab3.exe");
+}
+
+
+static VOID GetTempFilePath(LPWSTR szPath) {
+    /**
+     * @brief Get path to temporary file
+     *
+     * @param szPath: Buffer to store path. Needs to be at least MAX_PATH size
+     */
+
+    GetTempPathW(MAX_PATH, szPath);
+    PathAppendW(szPath, TEMP_HASHES_FILE);
 }
 
 
@@ -143,8 +154,10 @@ LRESULT ExecuteOperation(UIOperationContext *data) {
     sa.nLength = sizeof(sa);
     sa.lpSecurityDescriptor = NULL;
     sa.bInheritHandle = TRUE;
+    WCHAR szTempPath[MAX_PATH] = {0};
     if (StrCmpIW(data->szOperation, APPLET_HASH) == 0) {
-        hTempFile = CreateFileW(TEMP_HASHES_FILE, GENERIC_WRITE, FILE_SHARE_READ, &sa, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
+        GetTempFilePath(szTempPath);
+        hTempFile = CreateFileW(szTempPath, GENERIC_WRITE, FILE_SHARE_READ, &sa, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
         if (hTempFile == INVALID_HANDLE_VALUE) {
             *data->result = STATUS_ACCESS_DENIED;
             return 0;
@@ -209,7 +222,7 @@ LRESULT ExecuteOperation(UIOperationContext *data) {
 
     // For hash, open temp file with notepad
     if (NT_SUCCESS(*data->result) && 0 == StrCmpIW(data->szOperation, APPLET_HASH))
-        ShellExecuteW(NULL, L"open", L"notepad.exe", TEMP_HASHES_FILE, NULL, SW_SHOWNORMAL);
+        ShellExecuteW(NULL, L"open", L"notepad.exe", szTempPath, NULL, SW_SHOWNORMAL);
 
     return 0;
 }

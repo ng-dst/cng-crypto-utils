@@ -166,7 +166,7 @@ NTSTATUS CreateKeyedOperationWindow(HINSTANCE hInstance, LPCWSTR applet, LPWSTR 
     POINT pt;
     GetCursorPos(&pt);
 
-    HWND hWnd = CreateWindow(wc.lpszClassName, applet, WS_OVERLAPPED | WS_CAPTION | WS_SYSMENU | WS_MINIMIZEBOX, pt.x, pt.y, WIDTH, HEIGHT, NULL, NULL, hInstance, NULL);
+    HWND hWnd = CreateWindow(wc.lpszClassName, applet, WS_OVERLAPPED | WS_CAPTION | WS_SYSMENU | WS_MINIMIZEBOX, pt.x - WIDTH, pt.y - HEIGHT, WIDTH, HEIGHT, NULL, NULL, hInstance, NULL);
     if (hWnd == NULL)
         return STATUS_UNSUCCESSFUL;
 
@@ -290,7 +290,7 @@ NTSTATUS CreateAlgorithmSelectWindow(HINSTANCE hInstance, LPCWSTR applet, LPWSTR
     POINT pt;
     GetCursorPos(&pt);
 
-    HWND hWnd = CreateWindow(wc.lpszClassName, applet, WS_OVERLAPPED | WS_CAPTION | WS_SYSMENU | WS_MINIMIZEBOX, pt.x, pt.y, WIDTH_SMALL, HEIGHT_SMALL, NULL, NULL, hInstance, NULL);
+    HWND hWnd = CreateWindow(wc.lpszClassName, applet, WS_OVERLAPPED | WS_CAPTION | WS_SYSMENU | WS_MINIMIZEBOX, pt.x - WIDTH_SMALL, pt.y - HEIGHT_SMALL, WIDTH_SMALL, HEIGHT_SMALL, NULL, NULL, hInstance, NULL);
     if (hWnd == NULL)
         return STATUS_UNSUCCESSFUL;
 
